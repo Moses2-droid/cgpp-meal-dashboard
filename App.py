@@ -70,18 +70,63 @@ classified = dp.classify_variables(df, zone_col=ZONE_COLUMN, month_col=MONTH_COL
                                    vaccination_vars=VACCINATION_VARIABLES,
                                    ebola_vars=EBOLA_VARIABLES)
 
+# Analysis / Inventory of variables
+st.markdown("---")
+st.header("Analyse automatique des variables (inventaire)")
+cols_to_inspect = [c for c in df.columns if c not in [ZONE_COLUMN, MONTH_COLUMN]]
+var_rows = []
+for c in cols_to_inspect:
+    dtype = str(df[c].dtype)
+    is_numeric = pd.api.types.is_numeric_dtype(df[c])
+    # fallback numeric detection
+    if not is_numeric:
+        sample = df[c].dropna().astype(str).head(200)
+        if len(sample) > 0:
+            numeric_like = sample.str.match(r'^[-+]?\d*[\.,]?\d+$').sum()
+            if (numeric_like / len(sample)) > 0.6:
+                is_numeric = True
+    uniq = int(df[c].nunique(dropna=True))
+    sample_vals = ", ".join(df[c].dropna().astype(str).unique()[:5].tolist())
+    suggested = None
+    for cat in ['notification', 'sensitization', 'vaccination', 'ebola']:
+        if c in classified.get(cat, []):
+            suggested = cat
+            break
+    if not suggested:
+        suggested = 'notification' if is_numeric else 'sensitization'
+    var_rows.append({
+        'variable': c,
+        'dtype': dtype,
+        'is_numeric': is_numeric,
+        'n_unique': uniq,
+        'sample_values': sample_vals,
+        'suggested_category': suggested
+    })
+
+var_df = pd.DataFrame(var_rows)
+st.dataframe(var_df, use_container_width=True)
+
+# Show summary of classified counts
+st.write("**Mapping automatique (résumé)**")
+st.write({k: len(v) for k, v in classified.items() if isinstance(v, list)})
+
 # Sidebar filters
 st.sidebar.header("Filtres d'analyse")
 selected_zones = st.sidebar.multiselect("Zone de Santé", options=sorted(df[ZONE_COLUMN].dropna().unique()), default=sorted(df[ZONE_COLUMN].dropna().unique()))
 selected_months = st.sidebar.multiselect("Mois", options=dp.month_order_present(df, MONTH_COLUMN), default=dp.month_order_present(df, MONTH_COLUMN))
 
-# Variable selector per module
+# Variable selector per module (default to automatic suggestions)
 st.sidebar.markdown("---")
 st.sidebar.subheader("Sélection de variables")
-sel_notification = st.sidebar.multiselect("Notification - variables", options=classified['notification'], default=classified['notification'][:3])
-sel_sensit = st.sidebar.multiselect("Sensibilisation - variables", options=classified['sensitization'], default=classified['sensitization'][:3])
-sel_vacc = st.sidebar.multiselect("Vaccination - variables", options=classified['vaccination'], default=classified['vaccination'][:3])
-sel_ebola = st.sidebar.multiselect("Ebola - variables", options=classified['ebola'], default=classified['ebola'][:3])
+sel_notification_default = [r['variable'] for r in var_rows if r['suggested_category']=='notification']
+sel_sensit_default = [r['variable'] for r in var_rows if r['suggested_category']=='sensitization']
+sel_vacc_default = [r['variable'] for r in var_rows if r['suggested_category']=='vaccination']
+sel_ebola_default = [r['variable'] for r in var_rows if r['suggested_category']=='ebola']
+
+sel_notification = st.sidebar.multiselect("Notification - variables", options=classified['notification'], default=sel_notification_default[:5])
+sel_sensit = st.sidebar.multiselect("Sensibilisation - variables", options=classified['sensitization'], default=sel_sensit_default[:5])
+sel_vacc = st.sidebar.multiselect("Vaccination - variables", options=classified['vaccination'], default=sel_vacc_default[:5])
+sel_ebola = st.sidebar.multiselect("Ebola - variables", options=classified['ebola'], default=sel_ebola_default[:5])
 
 # Filter dataframe
 df_filtered = df[df[ZONE_COLUMN].isin(selected_zones) & df[MONTH_COLUMN].isin(selected_months)].copy()
@@ -92,15 +137,16 @@ with st.container():
     c1.metric("Observations", f"{len(df_filtered):,}")
     c2.metric("Zones de Santé", f"{df_filtered[ZONE_COLUMN].nunique():,}")
     c3.metric("Mois couverts", f"{df_filtered[MONTH_COLUMN].nunique():,}")
-    # Example KPIs (try to infer common vars)
-    notif_guess = classified['notification_numeric'][:1]
-    sens_guess = classified['sensitization_numeric'][:1]
-    vacc_guess = classified['vaccination_numeric'][:1]
+    notif_guess = classified.get('notification_numeric', [])[:1]
     if notif_guess:
-        c4.metric("Notifications (ex.)", f"{int(df_filtered[notif_guess[0]].sum()):,}")
+        try:
+            total_notif = int(df_filtered[notif_guess[0]].sum()) if not df_filtered[notif_guess[0]].dropna().empty else 0
+        except Exception:
+            total_notif = 0
+        c4.metric("Notifications (ex.)", f"{total_notif:,}")
 
 # Tabs for modules
-tabs = st.tabs(["📢 Notification", "📣 Sensibilisation", "💉 Vaccination", "🦠 Ebola"]) 
+tabs = st.tabs(["📢 Notification", "📣 Sensibilisation", "💉 Vaccination", "🦠 Ebola"])
 
 # Notification tab
 with tabs[0]:
