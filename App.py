@@ -33,156 +33,156 @@ SENSITIZATION_VARIABLES = []
 VACCINATION_VARIABLES = []
 EBOLA_VARIABLES = []
 st.markdown(NOTIFICATION_VARIABLES)
-# st.set_page_config(page_title="CGPP MEAL Dashboard", page_icon="📊", layout="wide")
-# st.title("📊 CGPP MEAL Monitoring Dashboard")
-# st.caption("Suivi des indicateurs par Zone de Santé et par mois")
+st.set_page_config(page_title="CGPP MEAL Dashboard", page_icon="📊", layout="wide")
+st.title("📊 CGPP MEAL Monitoring Dashboard")
+st.caption("Suivi des indicateurs par Zone de Santé et par mois")
 
-# # Keep a copy of original
-# df = df_raw.copy()
+# Keep a copy of original
+df = df_raw.copy()
 
-# # Ensure configured columns exist; if not, ask user to map them
-# cols = list(df.columns)
-# if ZONE_COLUMN not in cols or MONTH_COLUMN not in cols:
-#     st.warning("Les noms de colonnes par défaut pour Zone ou Mois ne sont pas présents. Veuillez mapper les colonnes ci-dessous.")
-#     zone_col = st.selectbox("Colonne Zone de Santé", options=[None] + cols, index=0)
-#     month_col = st.selectbox("Colonne Mois", options=[None] + cols, index=0)
-#     if zone_col:
-#         ZONE_COLUMN = zone_col
-#     if month_col:
-#         MONTH_COLUMN = month_col
+# Ensure configured columns exist; if not, ask user to map them
+cols = list(df.columns)
+if ZONE_COLUMN not in cols or MONTH_COLUMN not in cols:
+    st.warning("Les noms de colonnes par défaut pour Zone ou Mois ne sont pas présents. Veuillez mapper les colonnes ci-dessous.")
+    zone_col = st.selectbox("Colonne Zone de Santé", options=[None] + cols, index=0)
+    month_col = st.selectbox("Colonne Mois", options=[None] + cols, index=0)
+    if zone_col:
+        ZONE_COLUMN = zone_col
+    if month_col:
+        MONTH_COLUMN = month_col
 
-# # Clean data
-# df = dp.clean_dataframe(df, zone_col=ZONE_COLUMN, month_col=MONTH_COLUMN)
+# Clean data
+df = dp.clean_dataframe(df, zone_col=ZONE_COLUMN, month_col=MONTH_COLUMN)
 
-# # Automatic classification
-# classified = dp.classify_variables(df, zone_col=ZONE_COLUMN, month_col=MONTH_COLUMN,
-#                                    notification_vars=NOTIFICATION_VARIABLES,
-#                                    sensitization_vars=SENSITIZATION_VARIABLES,
-#                                    vaccination_vars=VACCINATION_VARIABLES,
-#                                    ebola_vars=EBOLA_VARIABLES)
+# Automatic classification
+classified = dp.classify_variables(df, zone_col=ZONE_COLUMN, month_col=MONTH_COLUMN,
+                                   notification_vars=NOTIFICATION_VARIABLES,
+                                   sensitization_vars=SENSITIZATION_VARIABLES,
+                                   vaccination_vars=VACCINATION_VARIABLES,
+                                   ebola_vars=EBOLA_VARIABLES)
 
-# # Analysis / Inventory of variables
-# st.markdown("---")
-# st.header("Analyse automatique des variables (inventaire)")
-# cols_to_inspect = [c for c in df.columns if c not in [ZONE_COLUMN, MONTH_COLUMN]]
-# var_rows = []
-# for c in cols_to_inspect:
-#     dtype = str(df[c].dtype)
-#     is_numeric = pd.api.types.is_numeric_dtype(df[c])
-#     # fallback numeric detection
-#     if not is_numeric:
-#         sample = df[c].dropna().astype(str).head(200)
-#         if len(sample) > 0:
-#             numeric_like = sample.str.match(r'^[-+]?\d*[\.,]?\d+$').sum()
-#             if (numeric_like / len(sample)) > 0.6:
-#                 is_numeric = True
-#     uniq = int(df[c].nunique(dropna=True))
-#     sample_vals = ", ".join(df[c].dropna().astype(str).unique()[:5].tolist())
-#     suggested = None
-#     for cat in ['notification', 'sensitization', 'vaccination', 'ebola']:
-#         if c in classified.get(cat, []):
-#             suggested = cat
-#             break
-#     if not suggested:
-#         suggested = 'notification' if is_numeric else 'sensitization'
-#     var_rows.append({
-#         'variable': c,
-#         'dtype': dtype,
-#         'is_numeric': is_numeric,
-#         'n_unique': uniq,
-#         'sample_values': sample_vals,
-#         'suggested_category': suggested
-#     })
+# Analysis / Inventory of variables
+st.markdown("---")
+st.header("Analyse automatique des variables (inventaire)")
+cols_to_inspect = [c for c in df.columns if c not in [ZONE_COLUMN, MONTH_COLUMN]]
+var_rows = []
+for c in cols_to_inspect:
+    dtype = str(df[c].dtype)
+    is_numeric = pd.api.types.is_numeric_dtype(df[c])
+    # fallback numeric detection
+    if not is_numeric:
+        sample = df[c].dropna().astype(str).head(200)
+        if len(sample) > 0:
+            numeric_like = sample.str.match(r'^[-+]?\d*[\.,]?\d+$').sum()
+            if (numeric_like / len(sample)) > 0.6:
+                is_numeric = True
+    uniq = int(df[c].nunique(dropna=True))
+    sample_vals = ", ".join(df[c].dropna().astype(str).unique()[:5].tolist())
+    suggested = None
+    for cat in ['notification', 'sensitization', 'vaccination', 'ebola']:
+        if c in classified.get(cat, []):
+            suggested = cat
+            break
+    if not suggested:
+        suggested = 'notification' if is_numeric else 'sensitization'
+    var_rows.append({
+        'variable': c,
+        'dtype': dtype,
+        'is_numeric': is_numeric,
+        'n_unique': uniq,
+        'sample_values': sample_vals,
+        'suggested_category': suggested
+    })
 
-# var_df = pd.DataFrame(var_rows)
-# st.dataframe(var_df, use_container_width=True)
+var_df = pd.DataFrame(var_rows)
+st.dataframe(var_df, use_container_width=True)
 
-# # Show summary of classified counts
-# st.write("**Mapping automatique (résumé)**")
-# st.write({k: len(v) for k, v in classified.items() if isinstance(v, list)})
+# Show summary of classified counts
+st.write("**Mapping automatique (résumé)**")
+st.write({k: len(v) for k, v in classified.items() if isinstance(v, list)})
 
-# # Sidebar filters
-# st.sidebar.header("Filtres d'analyse")
-# selected_zones = st.sidebar.multiselect("Zone de Santé", options=sorted(df[ZONE_COLUMN].dropna().unique()), default=sorted(df[ZONE_COLUMN].dropna().unique()))
-# selected_months = st.sidebar.multiselect("Mois", options=dp.month_order_present(df, MONTH_COLUMN), default=dp.month_order_present(df, MONTH_COLUMN))
+# Sidebar filters
+st.sidebar.header("Filtres d'analyse")
+selected_zones = st.sidebar.multiselect("Zone de Santé", options=sorted(df[ZONE_COLUMN].dropna().unique()), default=sorted(df[ZONE_COLUMN].dropna().unique()))
+selected_months = st.sidebar.multiselect("Mois", options=dp.month_order_present(df, MONTH_COLUMN), default=dp.month_order_present(df, MONTH_COLUMN))
 
-# # Variable selector per module (default to automatic suggestions)
-# st.sidebar.markdown("---")
-# st.sidebar.subheader("Sélection de variables")
-# sel_notification_default = [r['variable'] for r in var_rows if r['suggested_category']=='notification']
-# sel_sensit_default = [r['variable'] for r in var_rows if r['suggested_category']=='sensitization']
-# sel_vacc_default = [r['variable'] for r in var_rows if r['suggested_category']=='vaccination']
-# sel_ebola_default = [r['variable'] for r in var_rows if r['suggested_category']=='ebola']
+# Variable selector per module (default to automatic suggestions)
+st.sidebar.markdown("---")
+st.sidebar.subheader("Sélection de variables")
+sel_notification_default = [r['variable'] for r in var_rows if r['suggested_category']=='notification']
+sel_sensit_default = [r['variable'] for r in var_rows if r['suggested_category']=='sensitization']
+sel_vacc_default = [r['variable'] for r in var_rows if r['suggested_category']=='vaccination']
+sel_ebola_default = [r['variable'] for r in var_rows if r['suggested_category']=='ebola']
 
-# sel_notification = st.sidebar.multiselect("Notification - variables", options=classified['notification'], default=sel_notification_default[:5])
-# sel_sensit = st.sidebar.multiselect("Sensibilisation - variables", options=classified['sensitization'], default=sel_sensit_default[:5])
-# sel_vacc = st.sidebar.multiselect("Vaccination - variables", options=classified['vaccination'], default=sel_vacc_default[:5])
-# sel_ebola = st.sidebar.multiselect("Ebola - variables", options=classified['ebola'], default=sel_ebola_default[:5])
+sel_notification = st.sidebar.multiselect("Notification - variables", options=classified['notification'], default=sel_notification_default[:5])
+sel_sensit = st.sidebar.multiselect("Sensibilisation - variables", options=classified['sensitization'], default=sel_sensit_default[:5])
+sel_vacc = st.sidebar.multiselect("Vaccination - variables", options=classified['vaccination'], default=sel_vacc_default[:5])
+sel_ebola = st.sidebar.multiselect("Ebola - variables", options=classified['ebola'], default=sel_ebola_default[:5])
 
-# # Filter dataframe
-# df_filtered = df[df[ZONE_COLUMN].isin(selected_zones) & df[MONTH_COLUMN].isin(selected_months)].copy()
+# Filter dataframe
+df_filtered = df[df[ZONE_COLUMN].isin(selected_zones) & df[MONTH_COLUMN].isin(selected_months)].copy()
 
-# # KPIs
-# with st.container():
-#     c1, c2, c3, c4 = st.columns(4)
-#     c1.metric("Observations", f"{len(df_filtered):,}")
-#     c2.metric("Zones de Santé", f"{df_filtered[ZONE_COLUMN].nunique():,}")
-#     c3.metric("Mois couverts", f"{df_filtered[MONTH_COLUMN].nunique():,}")
-#     notif_guess = classified.get('notification_numeric', [])[:1]
-#     if notif_guess:
-#         try:
-#             total_notif = int(df_filtered[notif_guess[0]].sum()) if not df_filtered[notif_guess[0]].dropna().empty else 0
-#         except Exception:
-#             total_notif = 0
-#         c4.metric("Notifications (ex.)", f"{total_notif:,}")
+# KPIs
+with st.container():
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Observations", f"{len(df_filtered):,}")
+    c2.metric("Zones de Santé", f"{df_filtered[ZONE_COLUMN].nunique():,}")
+    c3.metric("Mois couverts", f"{df_filtered[MONTH_COLUMN].nunique():,}")
+    notif_guess = classified.get('notification_numeric', [])[:1]
+    if notif_guess:
+        try:
+            total_notif = int(df_filtered[notif_guess[0]].sum()) if not df_filtered[notif_guess[0]].dropna().empty else 0
+        except Exception:
+            total_notif = 0
+        c4.metric("Notifications (ex.)", f"{total_notif:,}")
 
-# # Tabs for modules
-# tabs = st.tabs(["📢 Notification", "📣 Sensibilisation", "💉 Vaccination", "🦠 Ebola"])
+# Tabs for modules
+tabs = st.tabs(["📢 Notification", "📣 Sensibilisation", "💉 Vaccination", "🦠 Ebola"])
 
-# # Notification tab
-# with tabs[0]:
-#     st.header("Tableau 1. Résumé - Notification")
-#     viz.display_summary_table(df_filtered, group_cols=[ZONE_COLUMN, MONTH_COLUMN], numeric_vars=sel_notification, qualitative_vars=[], month_col=MONTH_COLUMN)
+# Notification tab
+with tabs[0]:
+    st.header("Tableau 1. Résumé - Notification")
+    viz.display_summary_table(df_filtered, group_cols=[ZONE_COLUMN, MONTH_COLUMN], numeric_vars=sel_notification, qualitative_vars=[], month_col=MONTH_COLUMN)
 
-# # Sensitization tab
-# with tabs[1]:
-#     st.header("Tableau 2. Résumé - Sensibilisation")
-#     viz.display_summary_table(df_filtered, group_cols=[ZONE_COLUMN, MONTH_COLUMN], numeric_vars=sel_sensit, qualitative_vars=[], month_col=MONTH_COLUMN)
+# Sensitization tab
+with tabs[1]:
+    st.header("Tableau 2. Résumé - Sensibilisation")
+    viz.display_summary_table(df_filtered, group_cols=[ZONE_COLUMN, MONTH_COLUMN], numeric_vars=sel_sensit, qualitative_vars=[], month_col=MONTH_COLUMN)
 
-# # Vaccination tab
-# with tabs[2]:
-#     st.header("Tableau 3. Résumé - Vaccination")
-#     viz.display_summary_table(df_filtered, group_cols=[ZONE_COLUMN, MONTH_COLUMN], numeric_vars=sel_vacc, qualitative_vars=[], month_col=MONTH_COLUMN)
+# Vaccination tab
+with tabs[2]:
+    st.header("Tableau 3. Résumé - Vaccination")
+    viz.display_summary_table(df_filtered, group_cols=[ZONE_COLUMN, MONTH_COLUMN], numeric_vars=sel_vacc, qualitative_vars=[], month_col=MONTH_COLUMN)
 
-# # Ebola tab
-# with tabs[3]:
-#     st.header("Tableau 4. Résumé - Ebola")
-#     viz.display_summary_table(df_filtered, group_cols=[ZONE_COLUMN, MONTH_COLUMN], numeric_vars=sel_ebola, qualitative_vars=[], month_col=MONTH_COLUMN)
+# Ebola tab
+with tabs[3]:
+    st.header("Tableau 4. Résumé - Ebola")
+    viz.display_summary_table(df_filtered, group_cols=[ZONE_COLUMN, MONTH_COLUMN], numeric_vars=sel_ebola, qualitative_vars=[], month_col=MONTH_COLUMN)
 
-# # Export section
-# st.markdown("---")
-# st.header("📥 Export des résultats")
+# Export section
+st.markdown("---")
+st.header("📥 Export des résultats")
 
-# def to_excel_bytes(dfs: dict):
-#     from io import BytesIO
-#     with BytesIO() as b:
-#         with pd.ExcelWriter(b, engine="openpyxl") as writer:
-#             for name, table in dfs.items():
-#                 table.to_excel(writer, sheet_name=name[:31], index=False)
-#         return b.getvalue()
+def to_excel_bytes(dfs: dict):
+    from io import BytesIO
+    with BytesIO() as b:
+        with pd.ExcelWriter(b, engine="openpyxl") as writer:
+            for name, table in dfs.items():
+                table.to_excel(writer, sheet_name=name[:31], index=False)
+        return b.getvalue()
 
-# export_tables = {
-#     "Notification": dp.aggregate_numeric(df_filtered, [ZONE_COLUMN, MONTH_COLUMN], sel_notification) if sel_notification else pd.DataFrame(),
-#     "Sensibilisation": dp.aggregate_numeric(df_filtered, [ZONE_COLUMN, MONTH_COLUMN], sel_sensit) if sel_sensit else pd.DataFrame(),
-#     "Vaccination": dp.aggregate_numeric(df_filtered, [ZONE_COLUMN, MONTH_COLUMN], sel_vacc) if sel_vacc else pd.DataFrame(),
-#     "Ebola": dp.aggregate_numeric(df_filtered, [ZONE_COLUMN, MONTH_COLUMN], sel_ebola) if sel_ebola else pd.DataFrame(),
-# }
+export_tables = {
+    "Notification": dp.aggregate_numeric(df_filtered, [ZONE_COLUMN, MONTH_COLUMN], sel_notification) if sel_notification else pd.DataFrame(),
+    "Sensibilisation": dp.aggregate_numeric(df_filtered, [ZONE_COLUMN, MONTH_COLUMN], sel_sensit) if sel_sensit else pd.DataFrame(),
+    "Vaccination": dp.aggregate_numeric(df_filtered, [ZONE_COLUMN, MONTH_COLUMN], sel_vacc) if sel_vacc else pd.DataFrame(),
+    "Ebola": dp.aggregate_numeric(df_filtered, [ZONE_COLUMN, MONTH_COLUMN], sel_ebola) if sel_ebola else pd.DataFrame(),
+}
 
-# if st.button("Télécharger les résultats (Excel)"):
-#     bytes_data = to_excel_bytes(export_tables)
-#     st.download_button(label="Télécharger Excel", data=bytes_data, file_name="cgpp_meal_results.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+if st.button("Télécharger les résultats (Excel)"):
+    bytes_data = to_excel_bytes(export_tables)
+    st.download_button(label="Télécharger Excel", data=bytes_data, file_name="cgpp_meal_results.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
-# if st.button("Télécharger les résultats (CSV, Notification)") and not export_tables['Notification'].empty:
-#     st.download_button(label="Notification CSV", data=export_tables['Notification'].to_csv(index=False).encode('utf-8'), file_name="notification.csv", mime="text/csv")
+if st.button("Télécharger les résultats (CSV, Notification)") and not export_tables['Notification'].empty:
+    st.download_button(label="Notification CSV", data=export_tables['Notification'].to_csv(index=False).encode('utf-8'), file_name="notification.csv", mime="text/csv")
 
-# st.write("Fin de l'application. Personnalisez les variables et la configuration en haut du fichier.")
+st.write("Fin de l'application. Personnalisez les variables et la configuration en haut du fichier.")
