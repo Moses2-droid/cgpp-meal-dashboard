@@ -7,8 +7,15 @@ st.set_page_config(
     page_icon="📊",
     layout="wide"
 )
+
 st.title("📊 CGPP MEAL Dashboard")
 # Chargement des données
-data = pd.read_excel("Data New version.xlsx")
-st.success(f"{len(data):,} enregistrements chargés")
-st.dataframe(data.head(20), use_container_width=True)
+if st.button(
+    "🔄 Importer les données depuis Ona",
+    type="primary",
+    use_container_width=True
+):
+    data = pd.read_excel("Data New version.xlsx")
+    st.success(f"{len(data):,} enregistrements chargés")
+# st.dataframe(data.head(20), use_container_width=True)
+st.
