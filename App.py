@@ -110,43 +110,19 @@ st.sidebar.header("Filtres d'analyse")
 selected_zones = st.sidebar.multiselect("Zone de Santé", options=sorted(df[ZONE_COLUMN].dropna().unique()), default=sorted(df[ZONE_COLUMN].dropna().unique()))
 selected_months = st.sidebar.multiselect("Mois", options=dp.month_order_present(df, MONTH_COLUMN), default=dp.month_order_present(df, MONTH_COLUMN))
 
-# Variable selector per module (default to automatic suggestions)
+# Theme Selector
 st.sidebar.markdown("---")
-st.sidebar.subheader("Sélection de variables")
-sel_notification_default = [r['variable'] for r in var_rows if r['suggested_category']=='notification']
-sel_sensit_default = [r['variable'] for r in var_rows if r['suggested_category']=='sensitization']
-sel_vacc_default = [r['variable'] for r in var_rows if r['suggested_category']=='vaccination']
-sel_ebola_default = [r['variable'] for r in var_rows if r['suggested_category']=='ebola']
-
-sel_notification = st.sidebar.multiselect("Notification - variables", options=classified['notification'], default=sel_notification_default[:5])
-sel_sensit = st.sidebar.multiselect("Sensibilisation - variables", options=classified['sensitization'], default=sel_sensit_default[:5])
-sel_vacc = st.sidebar.multiselect("Vaccination - variables", options=classified['vaccination'], default=sel_vacc_default[:5])
-sel_ebola = st.sidebar.multiselect("Ebola - variables", options=classified['ebola'], default=sel_ebola_default[:5])
-
+st.sidebar.subheader("Sélection de Thème")
 # Filter dataframe
 df_filtered = df[df[ZONE_COLUMN].isin(selected_zones) & df[MONTH_COLUMN].isin(selected_months)].copy()
-
-# KPIs
-with st.container():
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Observations", f"{len(df_filtered):,}")
-    c2.metric("Zones de Santé", f"{df_filtered[ZONE_COLUMN].nunique():,}")
-    c3.metric("Mois couverts", f"{df_filtered[MONTH_COLUMN].nunique():,}")
-    notif_guess = classified.get('notification_numeric', [])[:1]
-    if notif_guess:
-        try:
-            total_notif = int(df_filtered[notif_guess[0]].sum()) if not df_filtered[notif_guess[0]].dropna().empty else 0
-        except Exception:
-            total_notif = 0
-        c4.metric("Notifications (ex.)", f"{total_notif:,}")
 
 # Tabs for modules
 tabs = st.tabs(["📢 Notification", "📣 Sensibilisation", "💉 Vaccination", "🦠 Ebola"])
 
 # Notification tab
 with tabs[0]:
-    st.header("Tableau 1. Résumé - Notification")
-    viz.display_summary_table(df_filtered, group_cols=[ZONE_COLUMN, MONTH_COLUMN], numeric_vars=sel_notification, qualitative_vars=[], month_col=MONTH_COLUMN)
+    st.header("Tableau 1. Résumé - Notification mois de ", selected_months)
+    viz.display_summary_table(df_filtered, group_cols=[ZONE_COLUMN, MONTH_COLUMN], numeric_vars=sel_notification, month_col=MONTH_COLUMN)
 
 # Sensitization tab
 with tabs[1]:
