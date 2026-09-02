@@ -16,6 +16,5 @@ if st.button(
     use_container_width=True
 ):
     data = pd.read_excel("Data New version.xlsx")
-    st.success(f"{len(data):,} enregistrements chargés")
 # st.dataframe(data.head(20), use_container_width=True)
 st.
