@@ -32,7 +32,7 @@ NOTIFICATION_VARIABLES = df_raw.iloc[:, 38:110].select_dtypes(include="int").col
 SENSITIZATION_VARIABLES = []
 VACCINATION_VARIABLES = []
 EBOLA_VARIABLES = []
-st.marksdown(NOTIFICATION_VARIABLES)
+st.markdown(NOTIFICATION_VARIABLES)
 # st.set_page_config(page_title="CGPP MEAL Dashboard", page_icon="📊", layout="wide")
 # st.title("📊 CGPP MEAL Monitoring Dashboard")
 # st.caption("Suivi des indicateurs par Zone de Santé et par mois")
