@@ -34,8 +34,6 @@ df_raw[colonnes_bool] = df_raw[colonnes_bool].astype(int)
 # Optional lists: if empty, the app will try to detect variables automatically
 NOTIFICATION_VARIABLES = df_raw.iloc[:, 38:110].select_dtypes(include="int").columns.tolist()
 SENSITIZATION_VARIABLES = df_raw.iloc[:, [154] + list(range(156, 172)) + list(range(176, 192))+list(range(301, 305))].columns.tolist()
-
-print(colonnes_selectionnees.columns.tolist())
 VACCINATION_VARIABLES = []
 EBOLA_VARIABLES = []
 #st.markdown(NOTIFICATION_VARIABLES)
