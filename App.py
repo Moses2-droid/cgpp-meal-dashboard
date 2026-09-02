@@ -27,9 +27,13 @@ try:
 except Exception as e:
     st.error(f"Impossible de charger le fichier de données: {e}")
     st.stop()
+
+colonnes_bool = df_raw.select_dtypes(include="bool").columns
+# Convertir True → 1 et False → 0
+df_raw[colonnes_bool] = df_raw[colonnes_bool].astype(int)
 # Optional lists: if empty, the app will try to detect variables automatically
 NOTIFICATION_VARIABLES = df_raw.iloc[:, 38:110].select_dtypes(include="int").columns.tolist()
-SENSITIZATION_VARIABLES = df_raw.iloc[:, [154] + list(range(156, 172)) + list(range(176, 192))+list(range(301, 305))]
+SENSITIZATION_VARIABLES = df_raw.iloc[:, [154] + list(range(156, 172)) + list(range(176, 192))+list(range(301, 305))].columns.tolist()
 
 print(colonnes_selectionnees.columns.tolist())
 VACCINATION_VARIABLES = []
