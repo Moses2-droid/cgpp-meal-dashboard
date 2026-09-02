@@ -28,7 +28,7 @@ except Exception as e:
     st.error(f"Impossible de charger le fichier de données: {e}")
     st.stop()
 # Optional lists: if empty, the app will try to detect variables automatically
-NOTIFICATION_VARIABLES = df.iloc[:, 38:110].select_dtypes(include="int").tolist()
+NOTIFICATION_VARIABLES = df.iloc[:, 38:110].select_dtypes(include="int").columns.tolist()
 SENSITIZATION_VARIABLES = []
 VACCINATION_VARIABLES = []
 EBOLA_VARIABLES = []
