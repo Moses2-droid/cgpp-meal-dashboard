@@ -17,4 +17,3 @@ if st.button(
 ):
     data = pd.read_excel("Data New version.xlsx")
 # st.dataframe(data.head(20), use_container_width=True)
-st.
