@@ -29,10 +29,12 @@ except Exception as e:
     st.stop()
 # Optional lists: if empty, the app will try to detect variables automatically
 NOTIFICATION_VARIABLES = df_raw.iloc[:, 38:110].select_dtypes(include="int").columns.tolist()
-SENSITIZATION_VARIABLES = []
+SENSITIZATION_VARIABLES = df_raw.iloc[:, [154] + list(range(156, 172)) + list(range(176, 192))+list(range(301, 305))]
+
+print(colonnes_selectionnees.columns.tolist())
 VACCINATION_VARIABLES = []
 EBOLA_VARIABLES = []
-st.markdown(NOTIFICATION_VARIABLES)
+#st.markdown(NOTIFICATION_VARIABLES)
 st.set_page_config(page_title="CGPP MEAL Dashboard", page_icon="📊", layout="wide")
 st.title("📊 CGPP MEAL Monitoring Dashboard")
 st.caption("Suivi des indicateurs par Zone de Santé et par mois")
