@@ -116,7 +116,7 @@ selected_months = st.sidebar.multiselect("Mois", options=dp.month_order_present(
 st.sidebar.markdown("---")
 st.sidebar.subheader("Sélection de Thème")
 # Filter dataframe
-df_filtered = df[df[ZONE_COLUMN].isin(selected_zones) & df[MONTH_COLUMN].isin(selected_months)&df[YEAR_COLUMN].isin(selected_year)].copy()
+df_filtered = df[df[ZONE_COLUMN].isin(selected_zones) & df[MONTH_COLUMN].isin(selected_months)&(df[YEAR_COLUMN]==selected_year]).copy()
 
 # Tabs for modules
 tabs = st.tabs(["📢 Notification", "📣 Sensibilisation", "🦠 Ebola","💉 Vaccination"])
