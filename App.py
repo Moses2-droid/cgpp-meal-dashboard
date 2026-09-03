@@ -32,7 +32,6 @@ except Exception as e:
 colonnes_bool = df_raw.select_dtypes(include="bool").columns.tolist()
 # Convertir True → 1 et False → 0
 df_raw[colonnes_bool] = df_raw[colonnes_bool].astype(int)
-st.dataframe(df_raw[colonnes_bool])
 # Optional lists: if empty, the app will try to detect variables automatically
 NOTIFICATION_VARIABLES = df_raw.iloc[:, 38:110].select_dtypes(include="int").columns.tolist()
 SENSITIZATION_VARIABLES = df_raw.iloc[:, [154] + list(range(156, 172)) + list(range(176, 192))+list(range(301, 305))].columns.tolist()
@@ -136,17 +135,17 @@ with tabs[1]:
 # Vaccination tab
 with tabs[2]:
     st.header("Tableau 3. Résumé - Vaccination")
-    numeric_vars=df_filtered[EBOLA_VARIABLES].select_dtypes(include=["int"]).columns.tolist()
+    numeric_vars_e=df_filtered[EBOLA_VARIABLES].select_dtypes(include=["int"]).columns.tolist()
     st.header("Tableau 2. Résumé - EBOLA-SENSIBILISATION ET NOTIFICATION")
-    summary_EB=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars].sum().reset_index().T
+    summary_EB=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars_e].sum().reset_index().T
     st.dataframe(summary_EB)
 
 # Ebola tab
 with tabs[3]:
     st.header("Tableau 4. Résumé - Ebola")
-    numeric_vars=df_filtered[VACCINATION_VARIABLES].select_dtypes(include=["int"]).columns.tolist()
+    numeric_vars_v=df_filtered[VACCINATION_VARIABLES].select_dtypes(include=["int"]).columns.tolist()
     st.header("Tableau 2. Résumé - Sensibilisation Nombres et Thèmes")
-    summary_v=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars].sum().reset_index().T
+    summary_v=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars_v].sum().reset_index().T
     st.dataframe(summary_v)
 
 # Export section
