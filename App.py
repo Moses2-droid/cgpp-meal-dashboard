@@ -109,7 +109,7 @@ st.write({k: len(v) for k, v in classified.items() if isinstance(v, list)})
 # Sidebar filters
 st.sidebar.header("Filtres d'analyse")
 selected_zones = st.sidebar.multiselect("Zone de Santé", options=sorted(df[ZONE_COLUMN].dropna().unique()), default=sorted(df[ZONE_COLUMN].dropna().unique()))
-selected_year=st.sidebar.selectbox("Année", options=df[[YEAR_COLUMN]].dt.year.unique(), default=sorted(df[[YEAR_COLUMN]].dt.year.unique()))
+selected_year = st.sidebar.selectbox("Année",options=sorted(df[YEAR_COLUMN].dropna().unique()))
 selected_months = st.sidebar.multiselect("Mois", options=dp.month_order_present(df, MONTH_COLUMN), default=dp.month_order_present(df, MONTH_COLUMN))
 
 # Theme Selector
