@@ -137,13 +137,13 @@ with tabs[2]:
     st.header("Tableau 3. Résumé - Vaccination")
     numeric_var=df_filtered[EBOLA_VARIABLES].select_dtypes(include=["int"]).columns.tolist()
     st.header("Tableau 2. Résumé - EBOLA-SENSIBILISATION ET NOTIFICATION")
-    summary_EB=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars].sum().reset_index().T
+    summary_EB=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars].sum().T
     st.markdown(len(numeric_var))
     st.dataframe(summary_EB)
 
 # Ebola tab
 with tabs[3]:
-    st.header("Tableau 4. Résumé - Ebola")
+    st.header("Tableau 4. Résumé - Vaccination")
     numeric_vars_v=df_filtered[VACCINATION_VARIABLES].select_dtypes(include=["int"]).columns.tolist()
     st.header("Tableau 2. Résumé - Sensibilisation Nombres et Thèmes")
     summary_v=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars_v].sum().reset_index().T
