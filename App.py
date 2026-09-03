@@ -136,7 +136,7 @@ with tabs[1]:
 with tabs[2]:
     st.header("Tableau 3. Résumé - Vaccination")
     numeric_vars=df_filtered[EBOLA_VARIABLES].select_dtypes(include=["int"]).columns.tolist()
-    st.header("Tableau 2. Résumé - Sensibilisation Nombres et Thèmes")
+    st.header("Tableau 2. Résumé - EBOLA-SENSIBILISATION ET NOTIFICATION")
     summary_EB=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars].sum().reset_index().T
     st.dataframe(summary_EB)
 
