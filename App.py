@@ -121,8 +121,10 @@ tabs = st.tabs(["📢 Notification", "📣 Sensibilisation", "💉 Vaccination",
 
 # Notification tab
 with tabs[0]:
+    numeric_vars=df_filtered[notification_vars].select_dtypes(include=["int"]).columns.tolist()
     st.header("Tableau 1. Résumé - Notification mois de ", selected_months)
-    viz.display_summary_table(df_filtered, group_cols=[ZONE_COLUMN, MONTH_COLUMN], numeric_vars=sel_notification, month_col=MONTH_COLUMN)
+    table_numeric = (df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN])[numeric_vars].sum().reset_index())
+    st.dataframe(table_numeric)
 
 # Sensitization tab
 with tabs[1]:
