@@ -116,30 +116,37 @@ selected_months = st.sidebar.multiselect("Mois", options=dp.month_order_present(
 st.sidebar.markdown("---")
 st.sidebar.subheader("Sélection de Thème")
 # Filter dataframe
-df_filtered = df[df[ZONE_COLUMN].isin(selected_zones) & df[MONTH_COLUMN].isin(selected_months)].copy()
+df_filtered = df[df[ZONE_COLUMN].isin(selected_zones) & df[MONTH_COLUMN].isin(selected_months)&df[YEAR_COLUMN].isin(selected_year)].copy()
 
 # Tabs for modules
-tabs = st.tabs(["📢 Notification", "📣 Sensibilisation", "💉 Vaccination", "🦠 Ebola"])
+tabs = st.tabs(["📢 Notification", "📣 Sensibilisation", "🦠 Ebola","💉 Vaccination"])
 
 # Notification tab
 with tabs[0]:
     numeric_vars=df_filtered[NOTIFICATION_VARIABLES].select_dtypes(include=["int"]).columns.tolist()
-    summary_notif=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, "1.22. Année du rapport"])[numeric_vars].sum().reset_index().T
+    summary_notif=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars].sum().reset_index().T
     st.dataframe(summary_notif)
 # Sensitization tab
 with tabs[1]:
-    st.header("Tableau 2. Résumé - Sensibilisation")
-    viz.display_summary_table(df_filtered, group_cols=[ZONE_COLUMN, MONTH_COLUMN], numeric_vars=sel_sensit, qualitative_vars=[], month_col=MONTH_COLUMN)
-
+    numeric_vars=df_filtered[SENSITIZATION_VARIABLES].select_dtypes(include=["int"]).columns.tolist()
+    st.header("Tableau 2. Résumé - Sensibilisation Nombres et Thèmes")
+    summary_sensit=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars].sum().reset_index().T
+    st.dataframe(summary_sensit)
 # Vaccination tab
 with tabs[2]:
     st.header("Tableau 3. Résumé - Vaccination")
-    viz.display_summary_table(df_filtered, group_cols=[ZONE_COLUMN, MONTH_COLUMN], numeric_vars=sel_vacc, qualitative_vars=[], month_col=MONTH_COLUMN)
+    numeric_vars=df_filtered[EBOLA_VARIABLES].select_dtypes(include=["int"]).columns.tolist()
+    st.header("Tableau 2. Résumé - Sensibilisation Nombres et Thèmes")
+    summary_EB=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars].sum().reset_index().T
+    st.dataframe(summary_EB)
 
 # Ebola tab
 with tabs[3]:
     st.header("Tableau 4. Résumé - Ebola")
-    viz.display_summary_table(df_filtered, group_cols=[ZONE_COLUMN, MONTH_COLUMN], numeric_vars=sel_ebola, qualitative_vars=[], month_col=MONTH_COLUMN)
+    numeric_vars=df_filtered[VACCINATION_VARIABLES].select_dtypes(include=["int"]).columns.tolist()
+    st.header("Tableau 2. Résumé - Sensibilisation Nombres et Thèmes")
+    summary_v=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars].sum().reset_index().T
+    st.dataframe(summary_v)
 
 # Export section
 st.markdown("---")
@@ -154,10 +161,10 @@ def to_excel_bytes(dfs: dict):
         return b.getvalue()
 
 export_tables = {
-    "Notification": dp.aggregate_numeric(df_filtered, [ZONE_COLUMN, MONTH_COLUMN], sel_notification) if sel_notification else pd.DataFrame(),
-    "Sensibilisation": dp.aggregate_numeric(df_filtered, [ZONE_COLUMN, MONTH_COLUMN], sel_sensit) if sel_sensit else pd.DataFrame(),
-    "Vaccination": dp.aggregate_numeric(df_filtered, [ZONE_COLUMN, MONTH_COLUMN], sel_vacc) if sel_vacc else pd.DataFrame(),
-    "Ebola": dp.aggregate_numeric(df_filtered, [ZONE_COLUMN, MONTH_COLUMN], sel_ebola) if sel_ebola else pd.DataFrame(),
+    "Notification": summary_notif ,
+    "Sensibilisation":  summary_sensit,
+    "Vaccination":  summary_v,
+    "Ebola":  summary_EB,
 }
 
 if st.button("Télécharger les résultats (Excel)"):
