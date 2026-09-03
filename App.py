@@ -146,7 +146,7 @@ with tabs[3]:
     st.header("Tableau 4. Résumé - Vaccination")
     numeric_vars_v=df_filtered[VACCINATION_VARIABLES].select_dtypes(include=["int"]).columns.tolist()
     st.header("Tableau 2. Résumé - Sensibilisation Nombres et Thèmes")
-    summary_v=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars_v].sum().reset_index().T
+    summary_v=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars_v].sum().T
     st.dataframe(summary_v)
 
 # Export section
