@@ -29,7 +29,7 @@ except Exception as e:
     st.error(f"Impossible de charger le fichier de données: {e}")
     st.stop()
 
-colonnes_bool = df_raw.select_dtypes(include="bool").columns
+colonnes_bool = df_raw.select_dtypes(include="bool").columns.tolist()
 # Convertir True → 1 et False → 0
 df_raw[colonnes_bool] = df_raw[colonnes_bool].astype(int)
 st.dataframe(df_raw(colonnes_bool))
