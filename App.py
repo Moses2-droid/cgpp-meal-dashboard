@@ -8,6 +8,7 @@ from modules import visualization as viz
 DATA_PATH = "Data New version.xlsx"  # path inside the repo
 ZONE_COLUMN = "1.3. Zone de santé"
 MONTH_COLUMN = "1.21. Mois du Rapport"
+YEAR_COLUMN= "1.22. Année du rapport"
 
 @st.cache_data
 def load_data(path: str):
@@ -108,6 +109,7 @@ st.write({k: len(v) for k, v in classified.items() if isinstance(v, list)})
 # Sidebar filters
 st.sidebar.header("Filtres d'analyse")
 selected_zones = st.sidebar.multiselect("Zone de Santé", options=sorted(df[ZONE_COLUMN].dropna().unique()), default=sorted(df[ZONE_COLUMN].dropna().unique()))
+selected_years=st.sidebar.multiselect("Année", options=dp.year_order_present(df, YEAR_COLUMN), default=dp.YEAR_order_present(df, YEAR_COLUMN))
 selected_months = st.sidebar.multiselect("Mois", options=dp.month_order_present(df, MONTH_COLUMN), default=dp.month_order_present(df, MONTH_COLUMN))
 
 # Theme Selector
