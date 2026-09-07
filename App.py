@@ -128,25 +128,25 @@ with tabs[0]:
     st.dataframe(summary_notif)
 # Sensitization tab
 with tabs[1]:
-    numeric_vars=df_filtered[SENSITIZATION_VARIABLES].select_dtypes(include=["int"]).columns.tolist()
+    numeric_vars1=df_filtered[SENSITIZATION_VARIABLES].select_dtypes(include=["int"]).columns.tolist()
     st.header("Tableau 2. Résumé - Sensibilisation Nombres et Thèmes")
-    #summary_sensit=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars].sum().reset_index().T
-    st.dataframe(df_filtered[numeric_vars])
+    summary_sensit=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars1].sum().reset_index().T
+    st.dataframe(summary_sensit)
 # Vaccination tab
 with tabs[2]:
     st.header("Tableau 3. Résumé - Vaccination")
-    numeric_var=df_filtered[EBOLA_VARIABLES].select_dtypes(include=["int"]).columns.tolist()
+    numeric_var2=df_filtered[EBOLA_VARIABLES].select_dtypes(include=["int"]).columns.tolist()
     st.header("Tableau 2. Résumé - EBOLA-SENSIBILISATION ET NOTIFICATION")
-    summary_EB=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars].sum().T
-    st.markdown(len(numeric_var))
+    summary_EB=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_var2].sum().T
+    st.markdown(len(numeric_var2))
     st.dataframe(summary_EB)
 
 # Ebola tab
 with tabs[3]:
     st.header("Tableau 4. Résumé - Vaccination")
-    numeric_vars_v=df_filtered[VACCINATION_VARIABLES].select_dtypes(include=["int"]).columns.tolist()
+    numeric_vars3=df_filtered[VACCINATION_VARIABLES].select_dtypes(include=["int"]).columns.tolist()
     st.header("Tableau 2. Résumé - Sensibilisation Nombres et Thèmes")
-    summary_v=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars_v].sum().T
+    summary_v=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars3].sum().T
     st.dataframe(summary_v)
 
 # Export section
