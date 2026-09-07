@@ -37,7 +37,7 @@ NOTIFICATION_VARIABLES = df_raw.iloc[:, 38:110].select_dtypes(include="int").col
 SENSITIZATION_VARIABLES = df_raw.iloc[:, [154] + list(range(156, 172)) + list(range(176, 192))+list(range(301, 305))].columns.tolist()
 VACCINATION_VARIABLES =df_raw.iloc[:, list(range(1196, 1221))+[1223]].columns.tolist()
 EBOLA_VARIABLES = df_raw.iloc[:, list(range(77, 79))+[159]+[82]].columns.tolist()
-#st.markdown(NOTIFICATION_VARIABLES)
+st.markdown(EBOLA_VARIABLES)
 st.set_page_config(page_title="CGPP MEAL Dashboard", page_icon="📊", layout="wide")
 st.title("📊 CGPP MEAL Monitoring Dashboard")
 st.caption("Suivi des indicateurs par Zone de Santé et par mois")
