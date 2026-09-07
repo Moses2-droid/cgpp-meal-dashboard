@@ -33,7 +33,7 @@ colonnes_bool = df_raw.select_dtypes(include="bool").columns.tolist()
 # Convertir True → 1 et False → 0
 df_raw[colonnes_bool] = df_raw[colonnes_bool].astype(int)
 # Optional lists: if empty, the app will try to detect variables automatically
-NOTIFICATION_VARIABLES = df_raw.iloc[:, 38:110].select_dtypes(include="number").columns.tolist()
+NOTIFICATION_VARIABLES = df_raw.iloc[:, 38:110].select_dtypes(include="int").columns.tolist()
 SENSITIZATION_VARIABLES = df_raw.iloc[:, [154] + list(range(156, 172)) + list(range(176, 192))+list(range(301, 305))].columns.tolist()
 VACCINATION_VARIABLES =df_raw.iloc[:, list(range(1196, 1221))+[1223]].columns.tolist()
 EBOLA_VARIABLES = df_raw.iloc[:, list(range(77, 79))+[159]+[82]].columns.tolist()
@@ -130,8 +130,8 @@ with tabs[0]:
 with tabs[1]:
     numeric_vars=df_filtered[SENSITIZATION_VARIABLES].select_dtypes(include=["int"]).columns.tolist()
     st.header("Tableau 2. Résumé - Sensibilisation Nombres et Thèmes")
-    summary_sensit=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars].sum().reset_index().T
-    st.dataframe(summary_sensit)
+    #summary_sensit=df_filtered.groupby([ZONE_COLUMN, MONTH_COLUMN, YEAR_COLUMN])[numeric_vars].sum().reset_index().T
+    st.dataframe(df_filtered[numeric_vars])
 # Vaccination tab
 with tabs[2]:
     st.header("Tableau 3. Résumé - Vaccination")
